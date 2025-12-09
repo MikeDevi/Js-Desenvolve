@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Curtidas</title>
+<style>
+    body{
+        font-family: Arial, Helvetica, sans-serif;
+        padding: 20px;
+    }
+    input{
+        padding: 5px;
+        font-size: 16px;
+    }
+    button{
+        padding: 6px 15px;
+        margin-left: 5px;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<h2>Sistema de Curtidas</h2>
+
+<input type="text" id="nome" placeholder="Digite seu nome">
+<button onclick="curtir()">Curtir</button>
+
+<p id="resultado">Ninguém curtiu</p>
+
+<script>
+    const curtidas = []
+
+    function curtir(){
+        const nome = document.getElementById("nome").value.trim()
+
+        if(nome === "") return
+
+        // se já existe, não adiciona
+        if(!curtidas.includes(nome)){
+            curtidas.push(nome)
+        }
+
+        atualizarMensagem()
+
+        document.getElementById("nome").value = ""
+    }
+
+    function atualizarMensagem(){
+        const p = document.getElementById("resultado")
+
+        if(curtidas.length === 0){
+            p.textContent = "Ninguém curtiu"
+        }
+        else if(curtidas.length === 1){
+            p.textContent = `${curtidas[0]} curtiu`
+        }
+        else if(curtidas.length === 2){
+            p.textContent = `${curtidas[0]} e ${curtidas[1]} curtiram`
+        }
+        else{
+            const restantes = curtidas.length - 2
+            p.textContent = `${curtidas[0]}, ${curtidas[1]} e mais ${restantes} pessoas curtiram`
+        }
+    }
+
+</script>
+
+</body>
+</html>
