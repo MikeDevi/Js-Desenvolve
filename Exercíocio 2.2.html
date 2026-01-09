@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mini Twitter - Feed</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f8fa;
+    }
+
+    /* Formulário fixo */
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: white;
+      border-bottom: 1px solid #ddd;
+      padding: 10px;
+      z-index: 10;
+    }
+
+    header textarea {
+      width: 80%;
+      height: 60px;
+      resize: none;
+      padding: 8px;
+    }
+
+    header button {
+      padding: 10px 16px;
+      margin-left: 10px;
+      background: #1da1f2;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    header button:hover {
+      background: #0d8ddb;
+    }
+
+    /* Feed */
+    main {
+      margin-top: 120px;
+      display: flex;
+      justify-content: center;
+    }
+
+    #feed {
+      width: 600px;
+    }
+
+    .post {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .username {
+      font-weight: bold;
+    }
+
+    .post img.cat {
+      width: 100%;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+
+    .actions {
+      margin-top: 10px;
+    }
+
+    .like-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #555;
+      font-size: 16px;
+    }
+
+    .like-btn:hover {
+      color: #e0245e;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <textarea id="postText" placeholder="O que está acontecendo?"></textarea>
+    <button onclick="criarPost()">Postar</button>
+  </header>
+
+  <main>
+    <div id="feed"></div>
+  </main>
+
+  <script>
+    // Array de objetos do feed
+    const feed = [];
+
+    const usuarioPadrao = {
+      nome: "@mikael",
+      avatar: "https://i.pravatar.cc/150?img=3"
+    };
+
+    async function buscarGato() {
+      const resposta = await fetch('https://api.thecatapi.com/v1/images/search');
+      const dados = await resposta.json();
+      return dados[0].url;
+    }
+
+    async function criarPost() {
+      const texto = document.getElementById('postText').value.trim();
+      if (!texto) return;
+
+      const imagemGato = await buscarGato();
+
+      const post = {
+        data: new Date(),
+        usuario: usuarioPadrao.nome,
+        avatar: usuarioPadrao.avatar,
+        texto: texto,
+        imagem: imagemGato,
+        likes: 0
+      };
+
+      feed.unshift(post); // mais recente primeiro
+      document.getElementById('postText').value = '';
+      renderizarFeed();
+    }
+
+    function curtirPost(index) {
+      feed[index].likes++;
+      renderizarFeed();
+    }
+
+    function renderizarFeed() {
+      const feedDiv = document.getElementById('feed');
+      feedDiv.innerHTML = '';
+
+      feed.forEach((post, index) => {
+        const div = document.createElement('div');
+        div.className = 'post';
+
+        div.innerHTML = `
+          <div class="post-header">
+            <img class="avatar" src="${post.avatar}" />
+            <span class="username">${post.usuario}</span>
+          </div>
+          <p>${post.texto}</p>
+          <img class="cat" src="${post.imagem}" />
+          <div class="actions">
+            <button class="like-btn" onclick="curtirPost(${index})">
+              ❤️ Curtir (${post.likes})
+            </button>
+          </div>
+        `;
+
+        feedDiv.appendChild(div);
+      });
+    }
+  </script>
+
+</body>
+</html>
